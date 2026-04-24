@@ -99,6 +99,10 @@ struct CosmicBatteryApplet {
 }
 
 impl CosmicBatteryApplet {
+    fn should_show_panel_icon(&self) -> bool {
+        !self.no_battery && self.battery_percent < 80.0
+    }
+
     fn update_battery(&mut self, mut percent: f64, on_battery: bool) {
         percent = percent.clamp(0.0, 100.0);
         self.on_battery = on_battery;
@@ -508,6 +512,18 @@ impl cosmic::Application for CosmicBatteryApplet {
     }
 
     fn view(&self) -> Element<Message> {
+        if !self.should_show_panel_icon() {
+            return self
+                .core
+                .applet
+                .autosize_window(
+                    space::horizontal()
+                        .width(Length::Fixed(0.0))
+                        .height(Length::Fixed(0.0)),
+                )
+                .into();
+        }
+
         let is_horizontal = match self.core.applet.anchor {
             PanelAnchor::Top | PanelAnchor::Bottom => true,
             PanelAnchor::Left | PanelAnchor::Right => false,
