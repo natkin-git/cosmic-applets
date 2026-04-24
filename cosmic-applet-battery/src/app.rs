@@ -43,6 +43,8 @@ use rustc_hash::FxHashMap;
 use std::{path::PathBuf, sync::LazyLock, time::Duration};
 use tokio::sync::mpsc::UnboundedSender;
 
+const BATTERY_VISIBILITY_THRESHOLD: f64 = 80.0;
+
 // XXX improve
 // TODO: time to empty varies? needs averaging?
 fn format_duration(duration: Duration) -> String {
@@ -100,7 +102,7 @@ struct CosmicBatteryApplet {
 
 impl CosmicBatteryApplet {
     fn should_show_panel_icon(&self) -> bool {
-        !self.no_battery && self.battery_percent < 80.0
+        !self.no_battery && self.battery_percent < BATTERY_VISIBILITY_THRESHOLD
     }
 
     fn update_battery(&mut self, mut percent: f64, on_battery: bool) {
